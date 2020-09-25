@@ -1,0 +1,23 @@
+body, html {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+canvas {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background:#000;
+	cursor: pointer;
+	background: url('http://www.blogdaelli.com/wp-content/uploads/2015/06/road-to-las-vegas-1080x675.jpg');
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-size: auto auto;
+	cursor: pointer;
+	background-size: cover;
+	background-repeat: no-repeat;
+}

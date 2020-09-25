@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rythm.js/2.2.5/rythm.min.js"></script>
+    <link rel="stylesheet" href="/assets/rythm.css">
+</head>
+
+<body>
+    <div id="container" class="rythm-bass1"></div>
+    <div id="container" class="rythm-bass2"></div>
+    <div id="container" class="rythm-bass3"></div>
+    <div id="container" class="rythm-bass4"></div>
+</body>
+
+<script>
+    const rythm = new Rythm()
+    rythm.pulseRatio = .1;
+    rythm.addRythm('rythm-bass1', 'color', 0, 10, {
+              from: [0, 153, 51],
+              to:[0, 255, 204]
+            })
+    rythm.addRythm('rythm-bass2', 'color', 0, 10, {
+              from: [255,255,0],
+              to:[255,0,0]
+            })
+    rythm.addRythm('rythm-bass3', 'neon', 0, 10, {
+              from: [78,120,112],
+              to:[255,0,0]
+            })
+    rythm.addRythm('rythm-bass3', 'color', 0, 10, {
+              from: [51, 153, 255],
+              to:[255,0,57]
+            })
+    rythm.addRythm('rythm-bass4', 'color', 0, 10, {
+              from: [255,123,0],
+              to:[12,27,240]
+            })
+
+    rythm.plugMicrophone().then(function () {
+
+        // Let's dance
+        rythm.start()
+
+        /* Stop the party
+         * @freeze: Set this to true if you want to prevent the elements to reset to their initial position
+         */
+        // rythm.stop(freeze)
+    })
+
+</script>
+
+</html>
