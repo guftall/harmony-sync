@@ -12,6 +12,9 @@ app.use('/assets', express.static('assets'))
 app.get('/mqtt', (req, res) => {
     res.sendFile(path.resolve('view/mqtt.html'))
 })
+app.get('/wifimodule', (req, res) => {
+    res.sendFile(path.resolve('view/wifimodule.html'))
+})
 app.get('/robot', (req, res) => {
     res.sendFile(path.resolve('view/robot-dance.html'))
 })
