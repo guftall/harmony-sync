@@ -1,10 +1,3 @@
-var socket = io();
-
-const topic = 'haji-bd'
-
-const funs = []
-
-
 class FunGenerator {
     constructor(wrapper) {
         this.funQueue = []
@@ -115,7 +108,6 @@ class FunGenerator {
     }
 }
 
-
 class FunButton {
     constructor(duration, text, id) {
         this.type = FunTypes.Button
@@ -185,18 +177,6 @@ class FunColor {
     }
 }
 
-const wrapper = document.getElementById('main-wrapper')
-var funGenerator = new FunGenerator(wrapper)
-
-funGenerator.start()
-
-
-// r-c = random-color
-socket.on('r-c', () => {
-
-    funGenerator.append(new FunColor(1000, getRandomColor()))
-})
-
 class Command {
 
     constructor(object) {
@@ -226,6 +206,19 @@ class Command {
         }
     }
 }
+
+var socket = io();
+const wrapper = document.getElementById('main-wrapper')
+var funGenerator = new FunGenerator(wrapper)
+
+funGenerator.start()
+
+// r-c = random-color
+socket.on('r-c', () => {
+
+    funGenerator.append(new FunColor(1000, getRandomColor()))
+})
+
 // c = command
 socket.on('c', msg => {
     var cmd = new Command(msg)
