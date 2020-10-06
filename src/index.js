@@ -1,12 +1,16 @@
 const express = require('express')
 const path = require('path')
+var http = require('http')
+const { initializeSocketio } = require('./socketioHandler')
+const { setLightsOnListener } = require('./mqttHandler')
+const { startDance } = require('./harmonyGenerator')
 const app = express()
 const port = 3000
 
 app.use('/assets', express.static('assets'))
 
-app.get('/', (req, res) => {
-    res.sendFile(path.resolve('view/index.html'))
+app.get('/mqtt', (req, res) => {
+    res.sendFile(path.resolve('view/mqtt.html'))
 })
 app.get('/robot', (req, res) => {
     res.sendFile(path.resolve('view/robot-dance.html'))
@@ -14,7 +18,19 @@ app.get('/robot', (req, res) => {
 app.get('/rythm', (req, res) => {
     res.sendFile(path.resolve('view/rythm.html'))
 })
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve('view/haji.html'))
 })
+app.get('/admin-ad982374ur', (req, res) => {
+    res.sendFile(path.resolve('view/admin.html'))
+})
+
+var httpServer = http.createServer(app)
+
+httpServer.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
+
+const socketIo = initializeSocketio(httpServer)
+
+setLightsOnListener(startDance(socketIo))

@@ -1,0 +1,9 @@
+.user {
+    width: 100px;
+    height: 100px;
+}
+
+.auto-vertical {
+    margin-top: auto;
+    margin-bottom: auto;
+}
