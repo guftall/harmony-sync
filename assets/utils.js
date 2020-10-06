@@ -7,3 +7,14 @@ function getRandomColor() {
     }
     return color;
 }
+
+const FunTypes = {
+    Button: 'b',
+    Color: 'c',
+}
+
+const CommandTypes = {
+    ReloadPage: 'r',
+    ResumeGenerator: 'g',
+    Fun: 'f',
+}
