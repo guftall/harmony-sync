@@ -46,21 +46,23 @@ function initializeListeners(socket) {
         sendButtonCommand(socket, guy.id, guy.text)
     }
     sendColor(socket, 1000, 'red')
-    sendColor(socket, 1000, 'green')
-    sendColor(socket, 1000, 'blue')
-    sendColor(socket, 500, '#2499ff')
-    sendColor(socket, 500, '#120da3')
-    sendColor(socket, 500, '#bf1f67')
-    sendColor(socket, 500, '#1fbf8f')
-    sendColor(socket, 500, '#e6cd2c')
+    // sendColor(socket, 1000, 'green')
+    // sendColor(socket, 1000, 'blue')
+    // sendColor(socket, 500, '#2499ff')
+    // sendColor(socket, 500, '#120da3')
+    // sendColor(socket, 500, '#bf1f67')
+    // sendColor(socket, 500, '#1fbf8f')
+    // sendColor(socket, 500, '#e6cd2c')
+    sendImage(socket, 2000, '/assets/img/img1-haji.png')
+    sendImage(socket, 2000, '/assets/img/img2-ali.jpg')
 
-    setTimeout(() => {
+    // setTimeout(() => {
 
 
-        for (let guy of guys) {
-            sendButtonCommand(socket, guy.id, guy.text)
-        }
-    }, 10000)
+    //     for (let guy of guys) {
+    //         sendButtonCommand(socket, guy.id, guy.text)
+    //     }
+    // }, 10000)
 }
 
 function sendButtonCommand(socket, id, text) {
@@ -85,6 +87,19 @@ function sendColor(socket, duration, color) {
             d: duration,
             v: {
                 c: color
+            }
+        }
+    })
+}
+
+function sendImage(socket, duration, url) {
+    socket.emit('c', {
+        t: CommandTypes.Fun,
+        f: {
+            t: FunTypes.Image,
+            d: duration,
+            v: {
+                u: url
             }
         }
     })

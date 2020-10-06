@@ -86,12 +86,6 @@ class FunGenerator {
             }
             case FunTypes.Button: {
 
-                var backgroundDiv = document.createElement('div')
-                backgroundDiv.style.backgroundColor = '#c3e3cb';
-                backgroundDiv.style.height = '100%'
-                backgroundDiv.style.width = '100%'
-                backgroundDiv.style.display = 'flex'
-
                 var buttonNode = document.createElement('button')
                 buttonNode.innerHTML = fun.variables.text
                 buttonNode.style.width = '100px'
@@ -100,8 +94,17 @@ class FunGenerator {
                 buttonNode.classList.add("btn", "btn-info")
                 buttonNode.onclick = fun.onClick.bind(fun)
 
-                backgroundDiv.appendChild(buttonNode)
-                this.wrapper.appendChild(backgroundDiv)
+                this.wrapper.appendChild(buttonNode)
+                break
+            }
+            case FunTypes.Image: {
+
+                const imageNode = document.createElement('img')
+                imageNode.src = fun.variables.url
+                imageNode.style.width = 'auto'
+                imageNode.style.height = '100%'
+                imageNode.style.margin = '0 auto'
+                this.wrapper.appendChild(imageNode)
                 break
             }
         }
@@ -177,6 +180,24 @@ class FunColor {
     }
 }
 
+class FunImage {
+    constructor(duration, url) {
+        this.type = FunTypes.Image
+        this.duration = duration
+        this.variables = {
+            url: url
+        }
+    }
+
+    static deserialize(obj) {
+        if (obj.t != FunTypes.Image) {
+            throw new Error('try to deserialize not image fun')
+        }
+
+        return new FunImage(obj.d, obj.v.u)
+    }
+}
+
 class Command {
 
     constructor(object) {
@@ -200,6 +221,12 @@ class Command {
                     }
                     case FunTypes.Color: {
                         return FunColor.deserialize(this.object.f)
+                    }
+                    case FunTypes.Image: {
+                        return FunImage.deserialize(this.object.f)
+                    }
+                    default: {
+                        throw new Error('command error: invalid fun type')
                     }
                 }
             }

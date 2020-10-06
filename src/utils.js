@@ -1,6 +1,7 @@
 exports.FunTypes = {
     Button: 'b',
     Color: 'c',
+    Image: 'i'
 }
 
 
