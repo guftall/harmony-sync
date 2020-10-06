@@ -1,12 +1,14 @@
 const io = require('socket.io');
 
-exports.initializeSocketio = function initializeSocketio(httpServer) {
+exports.initializeSocketio = function initializeSocketio(httpServer, onClientConnected) {
 
     var socketIo = io(httpServer);
 
-    socketIo.on('connection', socket => {
-        console.log('connected ', socket.id)
-    })
+    if (onClientConnected == undefined) {
+        throw new Error('undefined client connected cb')
+    }
+
+    socketIo.on('connection', onClientConnected)
 
     return socketIo
 }

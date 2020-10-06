@@ -3,7 +3,7 @@ const path = require('path')
 var http = require('http')
 const { initializeSocketio } = require('./socketioHandler')
 const { setLightsOnListener } = require('./mqttHandler')
-const { startDance } = require('./harmonyGenerator')
+const { startDance, onClientConnected } = require('./harmonyGenerator')
 const app = express()
 const port = 3000
 
@@ -31,6 +31,6 @@ httpServer.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
 
-const socketIo = initializeSocketio(httpServer)
+const socketIo = initializeSocketio(httpServer, onClientConnected)
 
 setLightsOnListener(startDance(socketIo))

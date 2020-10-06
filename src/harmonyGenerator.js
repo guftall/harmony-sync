@@ -12,7 +12,20 @@ exports.startDance = function startDance(socketio) {
     return onCalled
 }
 
+exports.onClientConnected = function (socket) {
+
+    console.log('connected ', socket.id)
+    initializeListeners(socket)
+}
+
 function onCalled() {
 
     socketIo.sockets.emit('haji-bd', 'HMM')
+}
+
+function initializeListeners(socket) {
+    
+    socket.on('bc', msg => {
+        console.log('button clicked', msg)
+    })
 }
