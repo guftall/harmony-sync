@@ -107,6 +107,26 @@ class FunGenerator {
                 this.wrapper.appendChild(imageNode)
                 break
             }
+            case FunTypes.Sound: {
+                var audioNode = document.createElement('audio')
+                audioNode.src = fun.variables.url
+                audioNode.style.display = 'none'
+                audioNode.play()
+
+                this.wrapper.appendChild(audioNode)
+                break
+            }
+            case FunTypes.Group: {
+                for (let fun of fun.funs) {
+                    switch (fun.type) {
+                        case FunTypes.Image: {
+                            throw new Error ('NOT IMplemented')
+                            break
+                        }
+                    }
+                }
+                break
+            }
         }
     }
 }
@@ -198,38 +218,87 @@ class FunImage {
     }
 }
 
+class FunSound {
+    constructor (duration, url) {
+        this.type = FunTypes.Sound
+        this.duration = duration
+        this.variables = {
+            url: url
+        }
+    }
+
+    static deserialize(obj) {
+        if (obj.t != FunTypes.Sound) {
+            throw new Error('try to deserialize not sound fun')
+        }
+
+        return new FunSound(obj.d, obj.v.u)
+    }
+}
+
+class FunGroup {
+    constructor(funs) {
+        this.funs = funs
+    }
+
+    static deserialize(obj, socket) {
+        if (obj.t != FunTypes.Group) {
+            throw new Error('try to deserialize not group fun')
+        }
+
+        const funs = []
+        // fl = fun list
+        for (let fun of obj.fl) {
+            funs.push(serverFunToOurFun(fun, socket))
+        }
+        return new FunGroup(funs)
+    }
+}
+
 class Command {
 
-    constructor(object) {
+    constructor(object, socket) {
         this.object = object
+        this.socket = socket
 
         this.type = this.object.t
     }
 
-    parseFun() {
+    parseCommandFun() {
         switch (this.type) {
             case CommandTypes.Fun: {
                 // object.f.t = object.fun.type
-                switch (this.object.f.t) {
-                    case FunTypes.Button: {
-
-                        const funBtn = FunButton.deserialize(this.object.f)
-                        funBtn.addOnClickListener(() => {
-                            socket.emit('bc', { i: funBtn.variables.id })
-                        })
-                        return funBtn
-                    }
-                    case FunTypes.Color: {
-                        return FunColor.deserialize(this.object.f)
-                    }
-                    case FunTypes.Image: {
-                        return FunImage.deserialize(this.object.f)
-                    }
-                    default: {
-                        throw new Error('command error: invalid fun type')
-                    }
-                }
+                return serverFunToOurFun(this.object.f, this.socket)
             }
+        }
+    }
+}
+
+function serverFunToOurFun(fun, socket) {
+
+    switch (fun.t) {
+        case FunTypes.Button: {
+
+            const funBtn = FunButton.deserialize(fun)
+            funBtn.addOnClickListener(() => {
+                socket.emit('bc', { i: funBtn.variables.id })
+            })
+            return funBtn
+        }
+        case FunTypes.Color: {
+            return FunColor.deserialize(fun)
+        }
+        case FunTypes.Image: {
+            return FunImage.deserialize(fun)
+        }
+        case FunTypes.Group: {
+            return FunGroup.deserialize(fun, socket)
+        }
+        case FunTypes.Sound: {
+            return FunSound.deserialize(fun)
+        }
+        default: {
+            throw new Error('command error: invalid fun type')
         }
     }
 }
@@ -248,7 +317,7 @@ socket.on('r-c', () => {
 
 // c = command
 socket.on('c', msg => {
-    var cmd = new Command(msg)
+    var cmd = new Command(msg, socket)
 
     if (cmd.type == CommandTypes.ReloadPage) {
 
@@ -258,7 +327,7 @@ socket.on('c', msg => {
         funGenerator.resumeAfterInfinite()
     } else if (cmd.type == CommandTypes.Fun) {
 
-        const fun = cmd.parseFun()
+        const fun = cmd.parseCommandFun()
         funGenerator.append(fun)
     }
 })

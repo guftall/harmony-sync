@@ -11,7 +11,9 @@ function getRandomColor() {
 const FunTypes = {
     Button: 'b',
     Color: 'c',
-    Image: 'i'
+    Image: 'i',
+    Sound: 's',
+    Group: 'g'
 }
 
 const CommandTypes = {

@@ -55,6 +55,9 @@ function initializeListeners(socket) {
     // sendColor(socket, 500, '#e6cd2c')
     sendImage(socket, 2000, '/assets/img/img1-haji.png')
     sendImage(socket, 2000, '/assets/img/img2-ali.jpg')
+    sendAudio(socket, 1000 * 5, '/assets/aud/aud1.mp3')
+    sendImage(socket, 1000, '/assets/img/img2-ali.jpg')
+    sendAudio(socket, 1000 * 5, '/assets/aud/aud2.mp3')
 
     // setTimeout(() => {
 
@@ -97,6 +100,19 @@ function sendImage(socket, duration, url) {
         t: CommandTypes.Fun,
         f: {
             t: FunTypes.Image,
+            d: duration,
+            v: {
+                u: url
+            }
+        }
+    })
+}
+
+function sendAudio(socket, duration, url) {
+    socket.emit('c', {
+        t: CommandTypes.Fun,
+        f: {
+            t: FunTypes.Sound,
             d: duration,
             v: {
                 u: url
