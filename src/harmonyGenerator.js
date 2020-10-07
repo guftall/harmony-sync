@@ -43,9 +43,9 @@ function initializeListeners(socket) {
     })
 
     for (let guy of guys) {
-        sendButtonCommand(socket, guy.id, guy.text)
+        sendFunCommand(socket, createButtonFun(guy.id, guy.text))
     }
-    sendColor(socket, 1000, 'red')
+    sendFunCommand(socket, createColorFun(1000, 'red'))
     // sendColor(socket, 1000, 'green')
     // sendColor(socket, 1000, 'blue')
     // sendColor(socket, 500, '#2499ff')
@@ -53,70 +53,77 @@ function initializeListeners(socket) {
     // sendColor(socket, 500, '#bf1f67')
     // sendColor(socket, 500, '#1fbf8f')
     // sendColor(socket, 500, '#e6cd2c')
-    sendImage(socket, 2000, '/assets/img/img1-haji.png')
-    sendImage(socket, 2000, '/assets/img/img2-ali.jpg')
-    sendAudio(socket, 1000 * 5, '/assets/aud/aud1.mp3')
-    sendImage(socket, 1000, '/assets/img/img2-ali.jpg')
-    sendAudio(socket, 1000 * 5, '/assets/aud/aud2.mp3')
+    sendFunCommand(socket, createGroup(5000, [
+        createImageFun(0, '/assets/img/img2-ali.jpg'),
+        createSoundFun(0, '/assets/aud/aud1.mp3')
+    ]))
+    sendFunCommand(socket, createGroup(10000, [
+        createColorFun(0, '#1fbf8f'),
+        createSoundFun(0, '/assets/aud/aud2.mp3')
+    ]))
+    sendFunCommand(socket, createGroup(10000, [
+        createImageFun(0, '/assets/img/img2-ali.jpg'),
+        createSoundFun(0, '/assets/aud/aud2.mp3')
+    ]))
+    // sendFunCommand(socket, createImageFun(2000, '/assets/img/img1-haji.png'))
+    // sendFunCommand(socket, createImageFun(2000, '/assets/img/img2-ali.jpg'))
+    // sendFunCommand(socket, createSoundFun(1000 * 5, '/assets/aud/aud1.mp3'))
+    // sendFunCommand(socket, createImageFun(1000, '/assets/img/img2-ali.jpg'))
+    // sendFunCommand(socket, createSoundFun(1000 * 5, '/assets/aud/aud2.mp3'))
 
-    // setTimeout(() => {
-
-
-    //     for (let guy of guys) {
-    //         sendButtonCommand(socket, guy.id, guy.text)
-    //     }
-    // }, 10000)
 }
 
-function sendButtonCommand(socket, id, text) {
-    socket.emit('c', {
-        t: CommandTypes.Fun,
-        f: {
-            t: FunTypes.Button,
-            d: 0,
-            v: {
-                i: id,
-                t: text
-            }
+function createButtonFun(id, text) {
+    return {
+        t: FunTypes.Button,
+        d: 0,
+        v: {
+            i: id,
+            t: text
         }
-    })
+    }
 }
 
-function sendColor(socket, duration, color) {
-    socket.emit('c', {
-        t: CommandTypes.Fun,
-        f: {
-            t: FunTypes.Color,
-            d: duration,
-            v: {
-                c: color
-            }
+function createColorFun(duration, color) {
+    return {
+        t: FunTypes.Color,
+        d: duration,
+        v: {
+            c: color
         }
-    })
+    }
 }
 
-function sendImage(socket, duration, url) {
-    socket.emit('c', {
-        t: CommandTypes.Fun,
-        f: {
-            t: FunTypes.Image,
-            d: duration,
-            v: {
-                u: url
-            }
+function createImageFun(duration, url) {
+    return {
+        t: FunTypes.Image,
+        d: duration,
+        v: {
+            u: url
         }
-    })
+    }
 }
 
-function sendAudio(socket, duration, url) {
+function sendFunCommand(socket, fun) {
     socket.emit('c', {
         t: CommandTypes.Fun,
-        f: {
-            t: FunTypes.Sound,
-            d: duration,
-            v: {
-                u: url
-            }
-        }
+        f: fun
     })
+}
+function createSoundFun(duration, url) {
+    return {
+        t: FunTypes.Sound,
+        d: duration,
+        v: {
+            u: url
+        }
+    }
+}
+
+function createGroup(duration, funs) {
+    return {
+        t: FunTypes.Group,
+        d: duration,
+        fl: funs
+    }
 }

@@ -70,62 +70,105 @@ class FunGenerator {
 
         this.funQueue[0].execute()
     }
+    createColorElement(color) {
 
+        var colorNode = document.createElement('div')
+        colorNode.style.backgroundColor = color
+        colorNode.style.height = '100%'
+        colorNode.style.width = '100%'
+
+        return colorNode
+    }
+    createImageElement(url) {
+
+        const imageNode = document.createElement('img')
+        imageNode.src = url
+        imageNode.style.width = 'auto'
+        imageNode.style.height = '100%'
+        imageNode.style.margin = '0 auto'
+
+        return imageNode
+    }
+    createButtonElement(text, onClick) {
+
+        var buttonNode = document.createElement('button')
+        buttonNode.innerHTML = text
+        buttonNode.style.width = '100px'
+        buttonNode.style.height = '60px'
+        buttonNode.style.margin = 'auto auto'
+        buttonNode.classList.add("btn", "btn-info")
+        buttonNode.onclick = onClick
+
+        return buttonNode
+    }
+    createSoundElement(url) {
+
+        var audioNode = document.createElement('audio')
+        audioNode.src = url
+        audioNode.style.display = 'none'
+
+        return audioNode
+    }
     runFun(fun) {
         console.log('run fun:', fun)
         $(this.wrapper).children().remove()
         switch (fun.type) {
             case FunTypes.Color: {
-                var colorNode = document.createElement('div')
-                colorNode.style.backgroundColor = fun.variables.color
-                colorNode.style.height = '100%'
-                colorNode.style.width = '100%'
+                var colorNode = this.createColorElement(fun.variables.color)
 
                 this.wrapper.appendChild(colorNode)
                 break
             }
             case FunTypes.Button: {
 
-                var buttonNode = document.createElement('button')
-                buttonNode.innerHTML = fun.variables.text
-                buttonNode.style.width = '100px'
-                buttonNode.style.height = '60px'
-                buttonNode.style.margin = 'auto auto'
-                buttonNode.classList.add("btn", "btn-info")
-                buttonNode.onclick = fun.onClick.bind(fun)
+                var buttonNode = this.createButtonElement(fun.variables.text, fun.onClick.bind(fun))
 
                 this.wrapper.appendChild(buttonNode)
                 break
             }
             case FunTypes.Image: {
 
-                const imageNode = document.createElement('img')
-                imageNode.src = fun.variables.url
-                imageNode.style.width = 'auto'
-                imageNode.style.height = '100%'
-                imageNode.style.margin = '0 auto'
+                const imageNode = this.createImageElement(fun.variables.url)
+
                 this.wrapper.appendChild(imageNode)
                 break
             }
             case FunTypes.Sound: {
-                var audioNode = document.createElement('audio')
-                audioNode.src = fun.variables.url
-                audioNode.style.display = 'none'
+                var audioNode = this.createSoundElement(fun.variables.url)
+
                 audioNode.play()
 
                 this.wrapper.appendChild(audioNode)
                 break
             }
             case FunTypes.Group: {
-                for (let fun of fun.funs) {
-                    switch (fun.type) {
+                for (let f of fun.funs) {
+                    switch (f.type) {
                         case FunTypes.Image: {
-                            throw new Error ('NOT IMplemented')
+                            var imageNode = this.createImageElement(f.variables.url)
+                            this.wrapper.appendChild(imageNode)
                             break
+                        }
+                        case FunTypes.Sound: {
+                            var soundNode = this.createSoundElement(f.variables.url)
+                            soundNode.play()
+                            this.wrapper.appendChild(soundNode)
+                            break
+                        }
+                        case FunTypes.Color: {
+                            var colorNode = this.createColorElement(f.variables.color)
+                            this.wrapper.appendChild(colorNode)
+                            break
+                        }
+                        default: {
+                            throw new Error('unsupported fun group element type')
                         }
                     }
                 }
                 break
+            }
+            default: {
+                throw new Error('tried to run fun with invalid type')
             }
         }
     }
@@ -219,7 +262,7 @@ class FunImage {
 }
 
 class FunSound {
-    constructor (duration, url) {
+    constructor(duration, url) {
         this.type = FunTypes.Sound
         this.duration = duration
         this.variables = {
@@ -237,7 +280,9 @@ class FunSound {
 }
 
 class FunGroup {
-    constructor(funs) {
+    constructor(duration, funs) {
+        this.type = FunTypes.Group
+        this.duration = duration
         this.funs = funs
     }
 
@@ -251,7 +296,7 @@ class FunGroup {
         for (let fun of obj.fl) {
             funs.push(serverFunToOurFun(fun, socket))
         }
-        return new FunGroup(funs)
+        return new FunGroup(obj.d, funs)
     }
 }
 
