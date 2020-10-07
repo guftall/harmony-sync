@@ -57,13 +57,13 @@ function initializeListeners(socket) {
         createImageFun(0, '/assets/img/img2-ali.jpg'),
         createSoundFun(0, '/assets/aud/aud1.mp3')
     ]))
-    sendFunCommand(socket, createGroup(10000, [
-        createColorFun(0, '#1fbf8f'),
-        createSoundFun(0, '/assets/aud/aud2.mp3')
-    ]))
-    sendFunCommand(socket, createGroup(10000, [
-        createImageFun(0, '/assets/img/img2-ali.jpg'),
-        createSoundFun(0, '/assets/aud/aud2.mp3')
+    // sendFunCommand(socket, createGroup(10000, [
+    //     createColorFun(0, '#1fbf8f'),
+    //     createSoundFun(0, '/assets/aud/aud2.mp3')
+    // ]))
+    sendFunCommand(socket, createGroup(2000, [
+        createImageFun(0, '/assets/img/img3-exp.gif'),
+        createSoundFun(0, '/assets/aud/aud3-exp.mp3')
     ]))
     // sendFunCommand(socket, createImageFun(2000, '/assets/img/img1-haji.png'))
     // sendFunCommand(socket, createImageFun(2000, '/assets/img/img2-ali.jpg'))
