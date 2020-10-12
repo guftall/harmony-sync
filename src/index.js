@@ -5,7 +5,7 @@ const { initializeSocketio } = require('./socketioHandler')
 const { setLightsOnListener } = require('./mqttHandler')
 const { startDance, onClientConnected } = require('./harmonyGenerator')
 const app = express()
-const port = 3000
+const port = 3050
 
 app.use('/assets', express.static('assets'))
 

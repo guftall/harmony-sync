@@ -3,9 +3,24 @@ exports.FunTypes = {
     Color: 'c',
     Sound: 's',
     Image: 'i',
-    Group: 'g'
+    Video: 'v',
+    Group: 'g',
+    QuestionTable: 'q'
 }
 
+
+exports.QuestionTableEvent = 'qte'
+exports.QuestionTableAnswerEvent = 'qtae'
+
+exports.QuestionTableEventTypes = {
+    OpenQuestion: 'o',
+    CloseQuestion: 'c'
+}
+
+exports.QuestionTableAnswerTypes = {
+    Button: 'b',
+    Text: 't'
+}
 
 exports.CommandTypes = {
     ReloadPage: 'r',

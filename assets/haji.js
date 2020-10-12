@@ -68,7 +68,7 @@ class FunGenerator {
             return
         }
 
-        this.funQueue[0].execute()
+        this.onExecuteQueueFun()
     }
     createColorElement(color) {
 
@@ -109,6 +109,15 @@ class FunGenerator {
 
         return audioNode
     }
+    createVideoElement(url) {
+
+        var videoElement = document.createElement('video')
+        videoElement.src = url
+        videoElement.style.width = '100%'
+        videoElement.style.height = '100%'
+
+        return videoElement
+    }
     runFun(fun) {
         console.log('run fun:', fun)
         $(this.wrapper).children().remove()
@@ -141,6 +150,13 @@ class FunGenerator {
                 this.wrapper.appendChild(audioNode)
                 break
             }
+            case FunTypes.Video: {
+                var videoNode = this.createVideoElement(fun.variables.url)
+                videoNode.play()
+                
+                this.wrapper.appendChild(videoNode)
+                break;
+            }
             case FunTypes.Group: {
                 for (let f of fun.funs) {
                     switch (f.type) {
@@ -158,6 +174,12 @@ class FunGenerator {
                         case FunTypes.Color: {
                             var colorNode = this.createColorElement(f.variables.color)
                             this.wrapper.appendChild(colorNode)
+                            break
+                        }
+                        case FunTypes.Video: {
+                            var videoNode = this.createVideoElement(f.variables.url)
+                            videoNode.play()
+                            this.wrapper.appendChild(videoNode)
                             break
                         }
                         default: {
@@ -279,6 +301,24 @@ class FunSound {
     }
 }
 
+class FunVideo {
+    constructor(duration, url) {
+        this.type = FunTypes.Video
+        this.duration = duration
+        this.variables = {
+            url: url
+        }
+    }
+
+    static deserialize(obj) {
+        if (obj.t != FunTypes.Video) {
+            throw new Error('tried to deserialize not video fun')
+        }
+
+        return new FunVideo(obj.d, obj.v.u)
+    }
+}
+
 class FunGroup {
     constructor(duration, funs) {
         this.type = FunTypes.Group
@@ -341,6 +381,9 @@ function serverFunToOurFun(fun, socket) {
         }
         case FunTypes.Sound: {
             return FunSound.deserialize(fun)
+        }
+        case FunTypes.Video: {
+            return FunVideo.deserialize(fun)
         }
         default: {
             throw new Error('command error: invalid fun type')

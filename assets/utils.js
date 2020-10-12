@@ -13,6 +13,7 @@ const FunTypes = {
     Color: 'c',
     Image: 'i',
     Sound: 's',
+    Video: 'v',
     Group: 'g'
 }
 
