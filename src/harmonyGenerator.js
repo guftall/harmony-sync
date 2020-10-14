@@ -39,19 +39,20 @@ const UserState = {
 }
 
 class User {
-    constructor(id, name) {
+    constructor(id, name, videoUrl) {
         this.id = id
         this.name = name
         this.socket = undefined
         this.userState = UserState.Unknown
+        this.videoUrl = videoUrl
     }
 }
 
-const userSobhan = new User(1, 'سبحان')
-const userMamdali = new User(2, 'محمد علی')
-const userMojtaba = new User(3, 'مجتبی')
-const userEsmail = new User(4, 'اسماعیل')
-const userFateme = new User(5, 'فاطمه')
+const userSobhan = new User(1, 'سبحان', '/assets/vid/nami.mp4')
+const userMamdali = new User(2, 'محمد علی', '/assets/vid/tavusi.mp4')
+const userMojtaba = new User(3, 'مجتبی', '/assets/vid/mojtaba.mp4')
+const userEsmail = new User(4, 'اسماعیل', '/assets/vid/esmaiil.mp4')
+const userFateme = new User(5, 'فاطمه', '/assets/vid/taheri.mp4')
 const userZahra = new User(6, 'زهرا')
 
 class ClientHolder {
@@ -63,6 +64,7 @@ class ClientHolder {
             userMojtaba,
             userEsmail,
             userFateme,
+            userZahra
         ]
     }
     onUserClicked(socket, userId) {
@@ -90,6 +92,49 @@ class ClientHolder {
                 sendFunCommand(user.socket, createQuestionTable(user.id))
             }
         }
+    }
+    sendVideos() {
+        for (let user of this.users) {
+            if (user.socket != undefined && user.videoUrl != undefined) {
+                if (user.id == userSobhan.id) {
+                    setTimeout(() => {
+                        sendFunCommand(user.socket, createVideoFun(53000, user.videoUrl))
+                    }, 7000)
+                } else if (user.id == userMojtaba.id) {
+                    setTimeout(() => {
+                        sendFunCommand(user.socket, createVideoFun(57000, user.videoUrl))
+                    }, 7000)
+                } else {
+                    sendFunCommand(user.socket, createVideoFun(67000, user.videoUrl))
+                }
+            }
+        }
+    }
+    explosion() {
+        let onlineUsers = []
+        for (let user of this.users) {
+            if (user.socket != undefined) {
+                onlineUsers.push(user)
+            }
+        }
+
+        let i = 0
+        let timerId = setInterval(() => {
+
+            let socket = onlineUsers[i].socket
+            sendFunCommand(socket, createSoundFun(2000, '/assets/aud/aud3-exp.mp3'))
+
+            setTimeout(() => {
+
+                sendFunCommand(socket, createSoundFun(0, '/assets/aud/hbd.mp3'))
+            }, 1200)
+            ++i;
+
+            if (i >= onlineUsers.length) {
+                clearInterval(timerId)
+                return
+            }
+        }, 700)
     }
 }
 
@@ -124,7 +169,15 @@ function initializeListeners(socket) {
                 case 'start-question-table': {
 
                     clientHolder.sendQuestionTable()
-                    break;
+                    break
+                }
+                case 'start-videos': {
+                    clientHolder.sendVideos()
+                    break
+                }
+                case 'explosion': {
+                    clientHolder.explosion()
+                    break
                 }
                 default: {
                     throw new Error('unrecognized fun type received from admin: ', data.fun)
