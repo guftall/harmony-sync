@@ -8,6 +8,10 @@ exports.FunTypes = {
     QuestionTable: 'q'
 }
 
+exports.ButtonAction = {
+    Default: 'd',
+    Jigh: 'j',
+}
 
 exports.QuestionTableEvent = 'qte'
 exports.QuestionTableAnswerEvent = 'qtae'

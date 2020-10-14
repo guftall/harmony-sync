@@ -1,4 +1,11 @@
-const { FunTypes, CommandTypes, QuestionTableEvent, QuestionTableEventTypes, QuestionTableAnswerTypes, QuestionTableAnswerEvent } = require('./utils')
+const {
+    FunTypes,
+    CommandTypes,
+    QuestionTableEvent,
+    QuestionTableEventTypes,
+    QuestionTableAnswerTypes,
+    QuestionTableAnswerEvent,
+    ButtonAction } = require('./utils')
 var danceStarted = false;
 var socketIo;
 
@@ -45,7 +52,7 @@ const userMamdali = new User(2, 'محمد علی')
 const userMojtaba = new User(3, 'مجتبی')
 const userEsmail = new User(4, 'اسماعیل')
 const userFateme = new User(5, 'فاطمه')
-const userReza = new User(6, 'رضا')
+const userZahra = new User(6, 'زهرا')
 
 class ClientHolder {
     constructor() {
@@ -77,6 +84,13 @@ class ClientHolder {
             }
         }
     }
+    sendQuestionTable() {
+        for (let user of this.users) {
+            if (user.socket != undefined) {
+                sendFunCommand(user.socket, createQuestionTable(user.id))
+            }
+        }
+    }
 }
 
 var clientHolder = new ClientHolder();
@@ -105,8 +119,21 @@ function initializeListeners(socket) {
         } else if (data.type == 'resume') {
 
             sendResumeCommand()
-            // sendFunCommand(socketIo.sockets, createSampleQuestionTable())
-            // sendQuestionTableOpenQuestionButton(socketIo.sockets)
+        } else if (data.type == 'fun') {
+            switch (data.fun) {
+                case 'start-question-table': {
+
+                    clientHolder.sendQuestionTable()
+                    break;
+                }
+                default: {
+                    throw new Error('unrecognized fun type received from admin: ', data.fun)
+                }
+            }
+        } else if (data.type == 'qt-open-question') {
+
+            sendQuestionTableOpenQuestionButton()
+
         } else {
 
             console.error('INVALID ADMIN COMMAND TYPE: ', data.type)
@@ -204,7 +231,7 @@ function sendResumeCommand() {
     })
 }
 function sendFunCommand(socket, fun) {
-    socketIo.sockets.emit('c', {
+    socket.emit('c', {
         t: CommandTypes.Fun,
         f: fun
     })
@@ -216,17 +243,65 @@ function sendQuestionTableCloseQuestion(data) {
         a: data.a
     })
 }
-function sendQuestionTableOpenQuestionButton(socket) {
+function sendQuestionTableOpenQuestionButton() {
     socketIo.sockets.emit(QuestionTableEvent, {
         t: QuestionTableEventTypes.OpenQuestion,
-        bd: 1000,
+        bd: 1500,
+        qid: 1,
+        at: QuestionTableAnswerTypes.Button,
+        b: [
+            { v: 'مهر', a: ButtonAction.Jigh },
+            { v: 'اردیبهشت', a: ButtonAction.Jigh },
+            { v: 'خرداد', a: ButtonAction.Default },
+            { v: 'مرداد', a: ButtonAction.Jigh }
+        ]
+    })
+    socketIo.sockets.emit(QuestionTableEvent, {
+        t: QuestionTableEventTypes.OpenQuestion,
+        bd: 1500,
         qid: 2,
         at: QuestionTableAnswerTypes.Button,
         b: [
-            { v: 'رونیکا' },
-            { v: 'خلیج' },
-            { v: 'خلیج' },
-            { v: 'خلیج' }
+            { v: 'مجتبی', a: ButtonAction.Jigh },
+            { v: 'حسن', a: ButtonAction.Default },
+            { v: 'علی بنیادی', a: ButtonAction.Jigh },
+            { v: 'خودش', a: ButtonAction.Jigh }
+        ]
+    })
+    socketIo.sockets.emit(QuestionTableEvent, {
+        t: QuestionTableEventTypes.OpenQuestion,
+        bd: 1500,
+        qid: 3,
+        at: QuestionTableAnswerTypes.Button,
+        b: [
+            { v: 'مگه مجتبی کیف داره؟', a: ButtonAction.Jigh },
+            { v: 'جیب بزرگه', a: ButtonAction.Jigh },
+            { v: 'دوم', a: ButtonAction.Default },
+            { v: 'هیچکدام', a: ButtonAction.Jigh }
+        ]
+    })
+    socketIo.sockets.emit(QuestionTableEvent, {
+        t: QuestionTableEventTypes.OpenQuestion,
+        bd: 1500,
+        qid: 4,
+        at: QuestionTableAnswerTypes.Button,
+        b: [
+            { v: 'فقط میلادیشو بلدم', a: ButtonAction.Jigh },
+            { v: 'هجدهم', a: ButtonAction.Default },
+            { v: 'هفدهم', a: ButtonAction.Jigh },
+            { v: 'شانزدهم', a: ButtonAction.Jigh }
+        ]
+    })
+    socketIo.sockets.emit(QuestionTableEvent, {
+        t: QuestionTableEventTypes.OpenQuestion,
+        bd: 1500,
+        qid: 5,
+        at: QuestionTableAnswerTypes.Button,
+        b: [
+            { v: 'کلنگ', a: ButtonAction.Jigh },
+            { v: 'دسته چک', a: ButtonAction.Jigh },
+            { v: 'چاقو', a: ButtonAction.Jigh },
+            { v: 'فر', a: ButtonAction.Jigh }
         ]
     })
 }
@@ -265,7 +340,7 @@ function createGroup(duration, funs) {
         fl: funs
     }
 }
-function createQuestions() {
+function createQuestionTable(myuid) {
     return {
         t: FunTypes.QuestionTable,
         d: 0,
@@ -288,16 +363,16 @@ function createQuestions() {
                 },
                 {
                     uid: userMamdali.id,
-                    q: `شرکت روز چندم ماه شمسی تاسیس شده؟`,
+                    q: `شرکت روز چندم ماه شمسی تاسیس شده؟ (${userMamdali.name})`,
                     qid: 4
                 },
                 {
-                    uid: userReza.id,
-                    q: `اسم عروسک جدید شرکت چیست؟(شروع با حرف د) (${userReza.name})`,
+                    uid: userZahra.id,
+                    q: `نام وسیله آشپزخانه مورد علاقه فاطمه چیست؟ (${userZahra.name})`,
                     qid: 5
                 }
             ],
-            muid: 1
+            muid: myuid
         }
     }
 }
